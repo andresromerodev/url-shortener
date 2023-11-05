@@ -47,6 +47,7 @@ const people = [{
     <UInput v-model="value" size="sm" />
     <br />
     <UButton>Shorten</UButton>
+    <UButton style="margin-left: 4px;" color="red" variant="solid">Clear</UButton>
     <br />
     <br />
     <UTable :rows="people" />
