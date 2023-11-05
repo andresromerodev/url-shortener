@@ -74,5 +74,5 @@ func main() {
 	app.Get("/api/v1/health", health)
 	app.Post("/api/v1/shorten", shorten)
 
-	log.Fatal(app.Listen("127.0.0.1:3000"))
+	log.Fatal(app.Listen("127.0.0.1:5000"))
 }
