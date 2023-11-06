@@ -1,0 +1,6 @@
+[build]
+cmd = "go"
+args = ["run", "main.go"]
+path = "."
+delay = "1s"
+bin = "url-shortener"

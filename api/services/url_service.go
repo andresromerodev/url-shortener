@@ -22,6 +22,7 @@ func (u *UrlService) CreateUrl(createUrlDto dto.CreateUrl) (*db.URLModel, error)
 	shortUrl := os.Getenv("BASE_URL") + nanoid
 
 	createdUrl, err := u.PrismaClient.URL.CreateOne(
+		db.URL.ID.Set(nanoid),
 		db.URL.ShortURL.Set(shortUrl),
 		db.URL.LongURL.Set(createUrlDto.LongURL),
 	).Exec(u.ctx)
@@ -31,4 +32,16 @@ func (u *UrlService) CreateUrl(createUrlDto dto.CreateUrl) (*db.URLModel, error)
 	}
 
 	return createdUrl, nil
+}
+
+func (u *UrlService) FindById(id string) (*db.URLModel, error) {
+	url, err := u.PrismaClient.URL.FindUnique(
+		db.URL.ID.Equals(id),
+	).Exec(u.ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return url, nil
 }

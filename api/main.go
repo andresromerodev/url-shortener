@@ -37,6 +37,18 @@ func shorten(c *fiber.Ctx) error {
 	return c.JSON(createdUrl)
 }
 
+func redirect(c *fiber.Ctx) error {
+	url, err := urlService.FindById(
+		c.Params("id"),
+	)
+
+	if err != nil {
+		c.Status(fiber.StatusNotFound).SendString("Not Found")
+	}
+
+	return c.Redirect(url.LongURL)
+}
+
 func main() {
 	err := godotenv.Load()
 
@@ -46,6 +58,9 @@ func main() {
 
 	app := fiber.New()
 	urlService = services.NewUrlService()
+
+	// To make it shorter exclude the redirect from the api/v1 group
+	app.Get("/:id", redirect)
 
 	v1 := app.Group("/api/v1")
 
