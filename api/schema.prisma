@@ -8,7 +8,7 @@ generator db {
 }
  
 model Url {
-  id            String      @id
+  id            String      @id @default(cuid())
   shortUrl      String      @unique
   longUrl       String
   createdAt     DateTime    @default(now())

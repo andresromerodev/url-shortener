@@ -1,32 +1,17 @@
 package main
 
 import (
-	"context"
+	"fmt"
 	"log"
 	"os"
 
-	"github.com/andresromeroh/url-shortener/api/db"
+	"github.com/andresromeroh/url-shortener/api/dto"
+	"github.com/andresromeroh/url-shortener/api/services"
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 	"github.com/joho/godotenv"
-	gonanoid "github.com/matoous/go-nanoid/v2"
 )
 
-type CreateUrlReq struct {
-	LongURL string `json:"longUrl"`
-}
-
-func getPrismaClient() (*db.PrismaClient, context.Context, error) {
-	client := db.NewClient()
-
-	if err := client.Prisma.Connect(); err != nil {
-		return nil, nil, err
-	}
-
-	bg := context.Background()
-
-	return client, bg, nil
-}
+var urlService *services.UrlService
 
 func health(c *fiber.Ctx) error {
 	response := fiber.Map{
@@ -36,24 +21,14 @@ func health(c *fiber.Ctx) error {
 }
 
 func shorten(c *fiber.Ctx) error {
-	request := new(CreateUrlReq)
+	body := new(dto.CreateUrl)
+	err := c.BodyParser(body)
 
-	if err := c.BodyParser(request); err != nil {
-		return c.Status(400).JSON(fiber.Map{
-			"error": "Invalid JSON",
-		})
+	if err != nil {
+		c.Status(fiber.StatusBadRequest).SendString("Bad Request")
 	}
 
-	nanoid, _ := gonanoid.New()
-	shortUrl := os.Getenv("BASE_URL") + nanoid
-
-	client, bg, _ := getPrismaClient()
-
-	createdUrl, err := client.URL.CreateOne(
-		db.URL.ID.Set(uuid.New().String()),
-		db.URL.ShortURL.Set(shortUrl),
-		db.URL.LongURL.Set(request.LongURL),
-	).Exec(bg)
+	createdUrl, err := urlService.CreateUrl(*body)
 
 	if err != nil {
 		return err
@@ -70,9 +45,14 @@ func main() {
 	}
 
 	app := fiber.New()
+	urlService = services.NewUrlService()
 
-	app.Get("/api/v1/health", health)
-	app.Post("/api/v1/shorten", shorten)
+	v1 := app.Group("/api/v1")
 
-	log.Fatal(app.Listen("127.0.0.1:5000"))
+	v1.Get("/health", health)
+	v1.Post("/shorten", shorten)
+
+	addr := fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT"))
+
+	log.Fatal(app.Listen(addr))
 }
