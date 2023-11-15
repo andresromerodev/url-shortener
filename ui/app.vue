@@ -1,8 +1,8 @@
 <script setup>
 const URL_EMPTY_MESSAGE = "Your new shortened URL will appear here once it's ready."
 
+const ip = ref('')
 const url = ref('')
-const ip = ref('www')
 const shortUrl = ref(URL_EMPTY_MESSAGE)
 
 const userInformation = await $fetch('https://api.ipify.org?format=json')
