@@ -12,7 +12,7 @@ ip.value = userInformation.ip
 async function shorten() {
   const response = await $fetch('http://localhost:5000/api/v1/shorten', {
     method: 'POST',
-    body: { longUrl: url.value }
+    body: { longUrl: url.value, ip: ip.value }
   })
   shortUrl.value = response.shortUrl
 }

@@ -25,6 +25,7 @@ func (u *UrlService) CreateUrl(createUrlDto dto.CreateUrl) (*db.URLModel, error)
 		db.URL.ID.Set(nanoid),
 		db.URL.ShortURL.Set(shortUrl),
 		db.URL.LongURL.Set(createUrlDto.LongURL),
+		db.URL.UserIP.Set(createUrlDto.IP),
 	).Exec(u.ctx)
 
 	if err != nil {
