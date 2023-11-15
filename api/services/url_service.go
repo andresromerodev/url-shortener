@@ -46,3 +46,15 @@ func (u *UrlService) FindById(id string) (*db.URLModel, error) {
 
 	return url, nil
 }
+
+func (u *UrlService) FindAllByUserIp(ip string) ([]db.URLModel, error) {
+	urls, err := u.PrismaClient.URL.FindMany(
+		db.URL.UserIP.Equals(ip),
+	).Exec(u.ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return urls, nil
+}

@@ -50,6 +50,18 @@ func redirect(c *fiber.Ctx) error {
 	return c.Redirect(url.LongURL)
 }
 
+func findAllByUserIp(c *fiber.Ctx) error {
+	urls, err := urlService.FindAllByUserIp(
+		c.Params("ip"),
+	)
+
+	if err != nil {
+		c.Status(fiber.StatusNotFound).SendString("Not Found")
+	}
+
+	return c.JSON(urls)
+}
+
 func main() {
 	err := godotenv.Load()
 
@@ -73,6 +85,7 @@ func main() {
 
 	v1.Get("/health", health)
 	v1.Post("/shorten", shorten)
+	v1.Get("/:ip/all", findAllByUserIp)
 
 	addr := fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT"))
 

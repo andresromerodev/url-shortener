@@ -13,5 +13,5 @@ model Url {
   longUrl       String
   createdAt     DateTime    @default(now())
   lastVisitedAt DateTime?
-  userIp        String?
+  userIp        String?     @unique
 }

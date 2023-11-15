@@ -3,11 +3,17 @@ const URL_EMPTY_MESSAGE = "Your new shortened URL will appear here once it's rea
 
 const ip = ref('')
 const url = ref('')
+const userUrls = ref([])
 const shortUrl = ref(URL_EMPTY_MESSAGE)
 
-const userInformation = await $fetch('https://api.ipify.org?format=json')
+async function refresh() {
+  userUrls.value = await $fetch(`http://localhost:5000/api/v1/${ip.value}/all`)
+}
 
-ip.value = userInformation.ip
+onMounted(async () => {
+  ip.value = (await $fetch('https://api.ipify.org?format=json')).ip
+  await refresh()
+})
 
 async function shorten() {
   const response = await $fetch('http://localhost:5000/api/v1/shorten', {
@@ -15,6 +21,7 @@ async function shorten() {
     body: { longUrl: url.value, ip: ip.value }
   })
   shortUrl.value = response.shortUrl
+  await refresh()
 }
 
 function clear() {
@@ -52,7 +59,7 @@ function clear() {
       We use your public IP address to show a personalized history of the URLs you have shortened. This helps you easily track and manage your links. Rest assured, your privacy is important, and this information is not shared externally.
     </p>
     <br />
-    <UTable :rows="[]" />
+    <UTable :rows="userUrls" />
     <br />
   </UContainer>
 </template>
