@@ -8,6 +8,7 @@ import (
 	"github.com/andresromeroh/url-shortener/api/dto"
 	"github.com/andresromeroh/url-shortener/api/services"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 )
 
@@ -57,6 +58,13 @@ func main() {
 	}
 
 	app := fiber.New()
+
+	app.Use(cors.New())
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowHeaders: "Origin, Content-Type, Accept",
+	}))
+
 	urlService = services.NewUrlService()
 
 	// To make it shorter exclude the redirect from the api/v1 group
