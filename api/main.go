@@ -67,7 +67,6 @@ func main() {
 
 	urlService = services.NewUrlService()
 
-	// To make it shorter exclude the redirect from the api/v1 group
 	app.Get("/:id", redirect)
 
 	v1 := app.Group("/api/v1")
