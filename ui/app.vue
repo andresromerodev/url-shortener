@@ -1,12 +1,18 @@
 <script setup>
 const url = ref('')
+const shortUrl = ref('Empty.')
 
-function shorten() {
-  const response = $fetch('http://localhost:5000/api/v1/shorten', {
+async function shorten() {
+  const response = await $fetch('http://localhost:5000/api/v1/shorten', {
     method: 'POST',
     body: { longUrl: url.value }
   })
-  console.log(JSON.stringify(response))
+  shortUrl.value = response.shortUrl
+}
+
+function clear() {
+  url.value = ''
+  shortUrl.value = 'Empty.'
 }
 
 </script>
@@ -15,10 +21,10 @@ function shorten() {
   <UContainer>
     <br />
     <h1>URL Shortener</h1>
-    <UInput v-model="url" size="sm" />
+    <UInput v-model="url" size="sm" @keyup.enter="shorten" />
     <br />
     <UButton @click="shorten">Shorten</UButton>
-    <UButton style="margin-left: 4px;" color="red" variant="solid">Clear</UButton>
+    <UButton style="margin-left: 4px;" color="red" variant="solid" @click="clear">Clear</UButton>
     <br />
     <br />
     <UCard>
@@ -28,7 +34,7 @@ function shorten() {
         active-class="text-primary"
         inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
       >
-        https://google.com
+        {{shortUrl}}
     </ULink>
     </UCard>
     <br />
